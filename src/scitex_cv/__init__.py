@@ -20,6 +20,8 @@ Example
 >>> cv.save(edges, "edges.png")
 """
 
+from __future__ import annotations
+
 try:
     from importlib.metadata import version as _v, PackageNotFoundError
     try:
@@ -41,6 +43,7 @@ from ._io import load, save, to_bgr, to_gray, to_rgb
 from ._transform import crop, flip, pad, resize, rotate
 
 __all__ = [
+    "__version__",
     # I/O
     "load",
     "save",
