@@ -88,7 +88,9 @@ The umbrella package's `scitex.cv` import path is preserved via a
 
 ## Part of SciTeX
 
-`scitex-cv` is part of [**SciTeX**](https://scitex.ai).
+`scitex-cv` is part of [**SciTeX**](https://scitex.ai). Install via
+the umbrella with `pip install scitex[cv]` to use as
+`scitex.cv` (Python) or `scitex cv ...` (CLI).
 
 >Four Freedoms for Research
 >
