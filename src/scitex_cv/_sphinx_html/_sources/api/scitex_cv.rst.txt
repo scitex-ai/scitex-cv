@@ -1,0 +1,6 @@
+﻿scitex\_cv
+==========
+
+.. automodule:: scitex_cv
+
+   
