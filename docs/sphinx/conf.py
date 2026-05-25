@@ -16,7 +16,6 @@ except ImportError:
 
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
@@ -37,8 +36,6 @@ autodoc_default_options = {
 # Heavy/optional deps mocked so RTD can build without installing them.
 autodoc_mock_imports = [""]
 
-autosummary_generate = True
-
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 
@@ -48,7 +45,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
 
 html_theme = "sphinx_rtd_theme"
-html_static_path = ["_static"]
+html_static_path = []
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
