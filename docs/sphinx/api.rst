@@ -1,6 +1,5 @@
-API Reference
-=============
+API
+===
 
 .. automodule:: scitex_cv
-   :no-index:
    :members:
