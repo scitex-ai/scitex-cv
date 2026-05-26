@@ -22,25 +22,20 @@ Example
 
 from __future__ import annotations
 
-try:
-    from importlib.metadata import version as _v, PackageNotFoundError
-    try:
-        __version__ = _v("scitex-cv")
-    except PackageNotFoundError:
-        __version__ = "0.0.0+local"
-    del _v, PackageNotFoundError
-except ImportError:  # pragma: no cover — only on ancient Pythons
-    __version__ = "0.0.0+local"
-# I/O
-# Drawing
-from ._draw import arrow, circle, line, polylines, rectangle, text
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as _v
 
-# Filters
+from ._draw import arrow, circle, line, polylines, rectangle, text
 from ._filters import blur, denoise, edge_detect, sharpen, threshold
 from ._io import load, save, to_bgr, to_gray, to_rgb
-
-# Transforms
 from ._transform import crop, flip, pad, resize, rotate
+
+try:
+    __version__ = _v("scitex-cv")
+except PackageNotFoundError:
+    __version__ = "0.0.0+local"
+
+del _v, PackageNotFoundError
 
 __all__ = [
     "__version__",
