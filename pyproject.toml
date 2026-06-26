@@ -50,6 +50,9 @@ Homepage = "https://github.com/ywatanabe1989/scitex-cv"
 Repository = "https://github.com/ywatanabe1989/scitex-cv"
 Documentation = "https://scitex-cv.readthedocs.io"
 
+[project.scripts]
+scitex-cv = "scitex_cv._cli:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
@@ -58,6 +61,9 @@ scitex_cv = ["_skills/**/*.md"]
 
 [project.entry-points."scitex_dev.skills"]
 scitex-cv = "scitex_cv"
+
+[project.entry-points."scitex_dev.system_deps"]
+scitex-cv = "scitex_cv._system_deps:provide"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
