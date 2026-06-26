@@ -52,13 +52,34 @@ class TestCliErrors:
 
 
 class TestSystemDepsInstall:
-    def test_install_without_apt_get_reports_error(self, monkeypatch, capsys):
-        # On a non-Debian host (no apt-get) install must fail loudly, not
-        # silently no-op. We point shutil.which at "missing" — this is a
-        # real boundary (PATH lookup), not a mock of our own code.
+    def test_install_defaults_to_dry_run(self, capsys):
+        # Default install must NOT touch apt — it prints the command only.
+        rc = main(["dev", "system-deps", "install"])
+        captured = capsys.readouterr()
+        assert rc == 0
+        assert "[dry-run]" in captured.out
+        for pkg in _EXPECTED_PACKAGES:
+            assert pkg in captured.out
+
+    def test_dry_run_overrides_yes(self, monkeypatch, capsys):
+        # Even with --yes, --dry-run keeps it safe: apt-get is never called.
+        import scitex_cv._cli as cli
+
+        def _boom(*_a, **_k):  # pragma: no cover - must not be reached
+            raise AssertionError("subprocess.call must not run under --dry-run")
+
+        monkeypatch.setattr(cli.subprocess, "call", _boom)
+        rc = main(["dev", "system-deps", "install", "--yes", "--dry-run"])
+        assert rc == 0
+        assert "[dry-run]" in capsys.readouterr().out
+
+    def test_install_yes_without_apt_get_reports_error(self, monkeypatch, capsys):
+        # `--yes` on a non-Debian host (no apt-get) must fail loudly, not
+        # silently no-op. Pointing shutil.which at "missing" exercises a
+        # real boundary (PATH lookup), not a mock of our own logic.
         import scitex_cv._cli as cli
 
         monkeypatch.setattr(cli.shutil, "which", lambda _name: None)
-        rc = main(["dev", "system-deps", "install"])
+        rc = main(["dev", "system-deps", "install", "--yes"])
         assert rc == 1
         assert "apt-get not found" in capsys.readouterr().err

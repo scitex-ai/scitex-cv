@@ -22,7 +22,10 @@ from .._system_deps import apt_deps, apt_packages
 
 def _cmd_system_deps(args: argparse.Namespace) -> int:
     if args.system_deps_action == "install":
-        return _install_apt(apt_packages(), assume_yes=args.yes)
+        # Dry-run by default — actually touching apt requires --yes.
+        return _install_apt(
+            apt_packages(), execute=args.yes and not args.dry_run
+        )
     # default / "list": native apt list — one package name per line so the
     # output pipes straight into `xargs apt-get install`.
     if args.verbose:
@@ -34,8 +37,14 @@ def _cmd_system_deps(args: argparse.Namespace) -> int:
     return 0
 
 
-def _install_apt(packages: List[str], *, assume_yes: bool) -> int:
+def _install_apt(packages: List[str], *, execute: bool) -> int:
     if not packages:
+        return 0
+    cmd = ["apt-get", "install", "-y", "--no-install-recommends", *packages]
+    if not execute:
+        # Default safety: show the command, change nothing. Pass --yes to run.
+        print("[dry-run] " + " ".join(cmd))
+        print("[dry-run] pass --yes to actually install.", file=sys.stderr)
         return 0
     apt_get = shutil.which("apt-get")
     if apt_get is None:
@@ -45,10 +54,7 @@ def _install_apt(packages: List[str], *, assume_yes: bool) -> int:
             file=sys.stderr,
         )
         return 1
-    cmd = [apt_get, "install", "--no-install-recommends"]
-    if assume_yes:
-        cmd.append("-y")
-    cmd.extend(packages)
+    cmd[0] = apt_get
     print("scitex-cv: " + " ".join(cmd), file=sys.stderr)
     return subprocess.call(cmd)
 
@@ -69,6 +75,13 @@ def _build_parser() -> argparse.ArgumentParser:
     sysdeps = dev_sub.add_parser(
         "system-deps",
         help="Show or install scitex-cv's OS-level apt dependencies.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "Examples:\n"
+            "  scitex-cv dev system-deps list            # apt names, one per line\n"
+            "  scitex-cv dev system-deps install         # dry-run: print the apt-get command\n"
+            "  sudo scitex-cv dev system-deps install --yes   # actually install (build-time, root)\n"
+        ),
     )
     sysdeps.add_argument(
         "system_deps_action",
@@ -87,7 +100,12 @@ def _build_parser() -> argparse.ArgumentParser:
         "-y",
         "--yes",
         action="store_true",
-        help="With 'install': pass -y to apt-get (non-interactive).",
+        help="With 'install': actually run apt-get (default is dry-run).",
+    )
+    sysdeps.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="With 'install': force dry-run even if --yes is given.",
     )
     sysdeps.set_defaults(func=_cmd_system_deps)
     return parser
