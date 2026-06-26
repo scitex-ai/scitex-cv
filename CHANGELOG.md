@@ -10,7 +10,8 @@ versions follow [Semantic Versioning](https://semver.org/).
 ## [0.2.0] — 2026-06-27
 
 - feat(system-deps): register a `scitex_dev.system_deps` provider declaring scitex-cv's OS-level apt libs (`libxcb1`, `libgl1`, `libglib2.0-0`) so the SciTeX container build discovers them via the ecosystem aggregator instead of hardcoding them. The provider lazily adapts a local apt-dep table to `scitex_dev.system_deps.SystemDepSpec`, staying inert (no hard import) until the keystone is installed.
-- test(integration): add a PS-140 cross-package-imports runtime gate for `scitex_dev.system_deps`.
+- perf(import): defer the cv2 import — `import scitex_cv` (and the system-deps provider) no longer pulls in cv2 / its OS shared libs at package load (PEP 562 lazy attributes), so the ecosystem aggregator can discover the provider in a build env that lacks those libs. Public functions import cv2 on first use, unchanged.
+- test(integration): add a PS-140 cross-package-imports runtime gate for `scitex_dev.system_deps` and a lazy-import gate proving the package imports without cv2.
 
 ## [0.1.5] — 2026-05-26
 

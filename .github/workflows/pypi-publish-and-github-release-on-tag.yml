@@ -75,14 +75,23 @@ jobs:
         with:
           ref: ${{ steps.ver.outputs.version }}
           fetch-depth: 0
-      # SIF-based self-hosted test run — mirrors pytest-matrix exactly. No
-      # setup-python (the bare Spartan node has no Python tool cache; that step
-      # failed "version not found for this OS"); no apt fd-install (fd is baked
-      # in the SIF). exec-in-sif.sh apptainer-execs the reused ci-cpu.sif and
-      # run-in-sif.sh layers THIS (tagged) checkout + [all,dev] into a writable
-      # target, then runs pytest. fail-loud on a missing SIF/shim.
-      - name: Run tests in the reused CI SIF (apptainer exec — deps layered, not on the bare runner)
-        run: bash .github/ci/exec-in-sif.sh run-in-sif.sh ${{ matrix.python-version }}
+      # Mirror ci.yml's pytest-matrix: deps via uv on the BARE spartan-cpu node.
+      # scitex-cv's only system dep is cv2's import-time shared libs
+      # (libxcb/libgl/libglib); those exist on the bare node but NOT in the
+      # reused ci-cpu.sif, so `import cv2` (hence every test module) fails inside
+      # the SIF. Running on the bare node — exactly where the passing PR CI runs
+      # — avoids that gap. uv provides Python (no setup-python tool-cache need).
+      - uses: astral-sh/setup-uv@v3
+        with:
+          cache-dependency-glob: pyproject.toml
+      - name: Install (.[all,dev]) + pytest
+        run: |
+          set -euo pipefail
+          uv venv --python ${{ matrix.python-version }} .venv
+          uv pip install --python .venv/bin/python -e ".[all,dev]" \
+            || uv pip install --python .venv/bin/python -e ".[dev]" \
+            || uv pip install --python .venv/bin/python -e .
+          .venv/bin/python -m pytest tests/
 
   build:
     needs: test
