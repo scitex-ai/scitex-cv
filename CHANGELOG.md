@@ -9,9 +9,10 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [0.2.0] — 2026-06-27
 
-- feat(system-deps): register a `scitex_dev.system_deps` provider declaring scitex-cv's OS-level apt libs (`libxcb1`, `libgl1`, `libglib2.0-0`) so the SciTeX container build discovers them via the ecosystem aggregator instead of hardcoding them. The provider lazily adapts a local apt-dep table to `scitex_dev.system_deps.SystemDepSpec`, staying inert (no hard import) until the keystone is installed.
-- perf(import): defer the cv2 import — `import scitex_cv` (and the system-deps provider) no longer pulls in cv2 / its OS shared libs at package load (PEP 562 lazy attributes), so the ecosystem aggregator can discover the provider in a build env that lacks those libs. Public functions import cv2 on first use, unchanged.
-- test(integration): add a PS-140 cross-package-imports runtime gate for `scitex_dev.system_deps` and a lazy-import gate proving the package imports without cv2.
+- **BREAKING(deps): switch `opencv-python` → `opencv-python-headless`.** The headless wheel is self-contained (bundles ffmpeg/libpng/openblas/…) and pulls in no X11/OpenGL/GLib system libraries, so scitex-cv installs and imports on a minimal/headless base with **no apt packages required**. scitex-cv uses no GUI cv2 (`imshow` etc.); if you need it, install `opencv-python` yourself.
+- feat(system-deps): register a `scitex_dev.system_deps` provider so the SciTeX container build discovers scitex-cv's OS-level needs via the ecosystem aggregator instead of hardcoding them. With headless OpenCV the verified apt set is **empty**, so the provider returns no packages (earlier dev revisions declared `libxcb1`/`libgl1`/`libglib2.0-0` for full opencv-python; headless drops all three).
+- perf(import): defer the cv2 import — `import scitex_cv` (and the system-deps provider module) no longer pulls in cv2 at package load (PEP 562 lazy attributes); public functions import cv2 on first use, unchanged.
+- test(integration): add a lazy-import gate proving the package and the provider module import without cv2.
 
 ## [0.1.5] — 2026-05-26
 
