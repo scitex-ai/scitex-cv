@@ -16,8 +16,8 @@ import subprocess
 import sys
 from typing import List, Optional
 
-from .. import __version__
-from .._system_deps import apt_deps, apt_packages
+from . import __version__
+from ._system_deps import apt_deps, apt_packages
 
 
 def _cmd_system_deps(args: argparse.Namespace) -> int:
@@ -62,7 +62,7 @@ def _install_apt(packages: List[str], *, execute: bool) -> int:
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="scitex-cv",
-        description="scitex-cv developer/build CLI.",
+        description="scitex-cv developer / build CLI.",
     )
     parser.add_argument(
         "--version", action="version", version=f"scitex-cv {__version__}"
