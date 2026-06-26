@@ -7,6 +7,11 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-06-27
+
+- feat(system-deps): register a `scitex_dev.system_deps` provider declaring scitex-cv's OS-level apt libs (`libxcb1`, `libgl1`, `libglib2.0-0`) so the SciTeX container build discovers them via the ecosystem aggregator instead of hardcoding them. The provider lazily adapts a local apt-dep table to `scitex_dev.system_deps.SystemDepSpec`, staying inert (no hard import) until the keystone is installed.
+- test(integration): add a PS-140 cross-package-imports runtime gate for `scitex_dev.system_deps`.
+
 ## [0.1.5] — 2026-05-26
 
 - test(quality): rewrite tests for PA-307 TQ001/002/003/007 conformance
