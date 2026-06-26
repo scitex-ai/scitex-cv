@@ -22,13 +22,9 @@ Example
 
 from __future__ import annotations
 
+import importlib
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _v
-
-from ._draw import arrow, circle, line, polylines, rectangle, text
-from ._filters import blur, denoise, edge_detect, sharpen, threshold
-from ._io import load, save, to_bgr, to_gray, to_rgb
-from ._transform import crop, flip, pad, resize, rotate
 
 try:
     __version__ = _v("scitex-cv")
@@ -36,6 +32,50 @@ except PackageNotFoundError:
     __version__ = "0.0.0+local"
 
 del _v, PackageNotFoundError
+
+# Public name -> submodule that defines it. Imports are deferred (PEP 562)
+# so that `import scitex_cv` does NOT pull in cv2 (and its OS shared libs
+# libxcb/libgl/libglib) at package-load time. This keeps the package — and
+# the `scitex_dev.system_deps` provider in ._system_deps — importable in a
+# minimal/build environment that does not yet have those libs, so the
+# ecosystem aggregator can discover them via the entry point. Accessing a
+# function (e.g. ``scitex_cv.load``) imports cv2 on first use, as before.
+_SUBMODULE_BY_NAME = {
+    "arrow": "._draw",
+    "circle": "._draw",
+    "line": "._draw",
+    "polylines": "._draw",
+    "rectangle": "._draw",
+    "text": "._draw",
+    "blur": "._filters",
+    "denoise": "._filters",
+    "edge_detect": "._filters",
+    "sharpen": "._filters",
+    "threshold": "._filters",
+    "load": "._io",
+    "save": "._io",
+    "to_bgr": "._io",
+    "to_gray": "._io",
+    "to_rgb": "._io",
+    "crop": "._transform",
+    "flip": "._transform",
+    "pad": "._transform",
+    "resize": "._transform",
+    "rotate": "._transform",
+}
+
+
+def __getattr__(name: str):
+    submodule = _SUBMODULE_BY_NAME.get(name)
+    if submodule is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    attr = getattr(importlib.import_module(submodule, __name__), name)
+    globals()[name] = attr  # cache so later lookups skip __getattr__
+    return attr
+
+
+def __dir__():
+    return sorted(__all__)
 
 __all__ = [
     "__version__",
