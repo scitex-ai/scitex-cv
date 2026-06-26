@@ -59,6 +59,9 @@ scitex_cv = ["_skills/**/*.md"]
 [project.entry-points."scitex_dev.skills"]
 scitex-cv = "scitex_cv"
 
+[project.entry-points."scitex_dev.system_deps"]
+scitex-cv = "scitex_cv._system_deps:provide"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["--disable-warnings"]
