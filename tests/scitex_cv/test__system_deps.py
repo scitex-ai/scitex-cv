@@ -92,14 +92,17 @@ class TestProviderEntryPoint:
         # Assert
         assert providers == {"scitex-cv"}
 
+    @pytest.mark.skipif(
+        _system_deps_installed(),
+        reason="scitex_dev.system_deps is installed",
+    )
     def test_provide_raises_cleanly_when_scitex_dev_absent(self):
         # Arrange
-        if _system_deps_installed():
-            pytest.skip("scitex_dev.system_deps is installed")
-        # Act
         ctx = pytest.raises(ImportError)
+        # Act
+        call = _system_deps.provide
         # Assert
         with ctx:
-            _system_deps.provide()
+            call()
 
 # EOF

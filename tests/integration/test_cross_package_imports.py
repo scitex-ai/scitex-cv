@@ -10,7 +10,22 @@ where scitex-dev is not installed.
 
 import pytest
 
+#: Every cross-package (`scitex_*`) module that scitex-cv's source imports.
+#: The PS-140 audit gate compares this against the imports it finds in
+#: ``src/`` and fails on drift — keep it in sync when adding/removing
+#: cross-package imports.
+CROSS_PACKAGE_IMPORTS = ["scitex_dev.system_deps"]
+
 _EXPECTED_PACKAGES = ["libxcb1", "libgl1", "libglib2.0-0"]
+
+
+def test_scitex_dev_system_deps_is_importable():
+    # Arrange
+    pytest.importorskip("scitex_dev.system_deps")
+    # Act
+    import scitex_dev.system_deps as system_deps
+    # Assert
+    assert hasattr(system_deps, "SystemDepSpec")
 
 
 def test_system_deps_provider_resolves_scitex_dev_spec():
@@ -22,16 +37,5 @@ def test_system_deps_provider_resolves_scitex_dev_spec():
     packages = [spec.package for spec in provide()]
     # Assert
     assert packages == _EXPECTED_PACKAGES
-
-
-def test_system_deps_provider_sets_provider_to_scitex_cv():
-    # Arrange
-    pytest.importorskip("scitex_dev.system_deps")
-    from scitex_cv._system_deps import provide
-
-    # Act
-    providers = {spec.provider for spec in provide()}
-    # Assert
-    assert providers == {"scitex-cv"}
 
 # EOF

@@ -50,9 +50,6 @@ Homepage = "https://github.com/ywatanabe1989/scitex-cv"
 Repository = "https://github.com/ywatanabe1989/scitex-cv"
 Documentation = "https://scitex-cv.readthedocs.io"
 
-[project.scripts]
-scitex-cv = "scitex_cv._cli:main"
-
 [tool.setuptools.packages.find]
 where = ["src"]
 
