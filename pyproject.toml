@@ -25,6 +25,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+ocr = [
+    "easyocr",  # image -> text engine for scitex_cv.ocr (pulls torch; heavy)
+]
 dev = [
     "pytest",
     "pytest-cov",

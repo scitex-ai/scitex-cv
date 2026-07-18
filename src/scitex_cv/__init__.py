@@ -8,6 +8,7 @@ Provides reusable cv2-based utilities for image processing:
 - Transform: resize, rotate, flip, crop, pad
 - Filters: blur, sharpen, edge detection, threshold, denoise
 - Draw: rectangle, circle, line, text, polylines, arrow
+- OCR: ocr (image -> text via EasyOCR; optional `ocr` extra)
 
 Example
 -------
@@ -28,6 +29,7 @@ from importlib.metadata import version as _v
 from ._draw import arrow, circle, line, polylines, rectangle, text
 from ._filters import blur, denoise, edge_detect, sharpen, threshold
 from ._io import load, save, to_bgr, to_gray, to_rgb
+from ._ocr import ocr
 from ._transform import crop, flip, pad, resize, rotate
 
 try:
@@ -64,6 +66,8 @@ __all__ = [
     "text",
     "polylines",
     "arrow",
+    # OCR
+    "ocr",
 ]
 
 # EOF
