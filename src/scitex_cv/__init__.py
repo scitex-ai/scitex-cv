@@ -8,6 +8,7 @@ Provides reusable cv2-based utilities for image processing:
 - Transform: resize, rotate, flip, crop, pad
 - Filters: blur, sharpen, edge detection, threshold, denoise
 - Draw: rectangle, circle, line, text, polylines, arrow
+- OCR: ocr (image -> text via EasyOCR; optional `ocr` extra)
 
 Example
 -------
@@ -62,6 +63,7 @@ _SUBMODULE_BY_NAME = {
     "pad": "._transform",
     "resize": "._transform",
     "rotate": "._transform",
+    "ocr": "._ocr",
 }
 
 
@@ -104,6 +106,8 @@ __all__ = [
     "text",
     "polylines",
     "arrow",
+    # OCR
+    "ocr",
 ]
 
 # EOF
