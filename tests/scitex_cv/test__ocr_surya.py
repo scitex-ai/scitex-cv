@@ -198,7 +198,8 @@ class TestIsLayoutOnly:
         # Arrange
         not_a_response = 12345
         # Act
-        act = lambda: is_layout_only(not_a_response)
+        def act():
+            return is_layout_only(not_a_response)
         # Assert
         with pytest.raises(TypeError):
             act()

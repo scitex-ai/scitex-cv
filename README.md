@@ -14,22 +14,65 @@
 
 <!-- scitex-badges:start -->
 <p align="center">
-  <a href="https://pypi.org/project/scitex-cv/"><img src="https://img.shields.io/pypi/v/scitex-cv.svg" alt="PyPI"></a>
-  <a href="https://pypi.org/project/scitex-cv/"><img src="https://img.shields.io/pypi/pyversions/scitex-cv.svg" alt="Python"></a>
-  <a href="https://github.com/ywatanabe1989/scitex-cv/actions/workflows/test.yml"><img src="https://github.com/ywatanabe1989/scitex-cv/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
-  <a href="https://codecov.io/gh/ywatanabe1989/scitex-cv"><img src="https://codecov.io/gh/ywatanabe1989/scitex-cv/graph/badge.svg" alt="Coverage"></a>
-  <a href="https://scitex-cv.readthedocs.io/en/latest/"><img src="https://readthedocs.org/projects/scitex-cv/badge/?version=latest" alt="Docs"></a>
-  <a href="https://www.gnu.org/licenses/agpl-3.0"><img src="https://img.shields.io/badge/license-AGPL_v3-blue.svg" alt="License: AGPL v3"></a>
+  <a href="https://pypi.org/project/scitex-cv/"><img src="https://img.shields.io/pypi/v/scitex-cv?label=pypi" alt="pypi"></a>
+  <a href="https://pypi.org/project/scitex-cv/"><img src="https://img.shields.io/pypi/pyversions/scitex-cv?label=python" alt="python"></a>
+  <a href="https://scitex-cv.readthedocs.io/en/latest/"><img src="https://img.shields.io/readthedocs/scitex-cv?label=docs" alt="docs"></a>
+</p>
+<p align="center">
+  <a href="https://github.com/scitex-ai/scitex-cv/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/scitex-ai/scitex-cv/ci.yml?branch=develop&label=tests" alt="tests"></a>
+  <a href="https://codecov.io/gh/ywatanabe1989/scitex-cv"><img src="https://img.shields.io/codecov/c/github/ywatanabe1989/scitex-cv/develop?label=cov" alt="cov"></a>
 </p>
 <!-- scitex-badges:end -->
 
 ---
 
+## Quick Start
+
+```python
+import scitex_cv as cv
+
+img = cv.load("input.png")
+img = cv.resize(img, scale=0.5)
+img = cv.blur(img, ksize=5)
+edges = cv.edge_detect(img, method="canny")
+cv.save(edges, "edges.png")
+```
+
+## Demo
+
+```mermaid
+flowchart LR
+    F["input.png"] --> L["cv.load()"]
+    L --> R["cv.resize(scale=0.5)"]
+    R --> B["cv.blur(ksize=5)"]
+    B --> E["cv.edge_detect(method='canny')"]
+    E --> S["cv.save('edges.png')"]
+    S --> O["edges.png"]
+```
+
+<p align="center"><sub><b>Figure 1.</b> Canonical pipeline: load, resize, blur, detect edges, save.</sub></p>
+
 ## Installation
 
 ```bash
-pip install scitex-cv
+uv pip install "scitex-cv[all]"
 ```
+
+Requires Python ≥ 3.9.
+
+<details>
+<summary><b>Per-extra installs</b></summary>
+
+<br>
+
+| Extra | Pulls in |
+|---|---|
+| `ocr` | image → text engine (`easyocr`, pulls torch; heavy) |
+| `pdf` | document rasterization + text-layer reading (`pymupdf`) |
+| `dev` | tests + lint + dev helpers (`pytest`, `ruff`, `scitex-dev`, `matplotlib`, …) |
+| `docs` | Sphinx docs build (`sphinx`, `myst-parser`, …) |
+
+</details>
 
 ## Architecture
 
@@ -43,20 +86,21 @@ scitex_cv/
 └── _ocr.py            ← image → text (EasyOCR; optional `ocr` extra)
 ```
 
+```mermaid
+flowchart LR
+    f["image file"] --> load["cv.load()"]
+    load --> arr[("ndarray")]
+    arr --> t["resize / crop / rotate"]
+    t --> flt["blur / sharpen / edge_detect"]
+    flt --> draw["rectangle / circle / text"]
+    draw --> save["cv.save()"]
+    save --> out["output file"]
+```
+
+<p align="center"><sub><b>Figure 2.</b> Module data flow: load to array, transform, filter, annotate, save.</sub></p>
+
 Thin, opinionated wrapper around PIL + OpenCV — every public name in
 `__init__.py` re-exports from one of the five leaf modules above.
-
-## Quick Start
-
-```python
-import scitex_cv as cv
-
-img = cv.load("input.png")
-img = cv.resize(img, scale=0.5)
-img = cv.blur(img, ksize=5)
-edges = cv.edge_detect(img, method="canny")
-cv.save(edges, "edges.png")
-```
 
 ## 1 Interfaces
 
@@ -100,18 +144,6 @@ cv.ocr(img, detail=True)                 # → [(bbox, text, confidence), ...]
 ```
 
 </details>
-
-## Demo
-
-```mermaid
-flowchart LR
-    F["input.png"] --> L["cv.load()"]
-    L --> R["cv.resize(scale=0.5)"]
-    R --> B["cv.blur(ksize=5)"]
-    B --> E["cv.edge_detect(method='canny')"]
-    E --> S["cv.save('edges.png')"]
-    S --> O["edges.png"]
-```
 
 ## Status
 
