@@ -13,7 +13,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except ImportError as exc:
+    raise ImportError("scitex_cv._dev needs matplotlib: pip install scitex-cv[dev]") from exc
 import numpy as np
 
 # SciTeX brand colors (using matplotlib-compatible RGBA tuples)
@@ -52,7 +55,10 @@ def _create_gradient_background(
     np.ndarray
         RGB image array (height, width, 3).
     """
-    import matplotlib.colors as mcolors
+    try:
+        import matplotlib.colors as mcolors
+    except ImportError as exc:
+        raise ImportError("scitex_cv._dev needs matplotlib: pip install scitex-cv[dev]") from exc
 
     # Convert hex to RGB
     c1 = np.array(mcolors.to_rgb(color1))

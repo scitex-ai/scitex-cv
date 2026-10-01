@@ -364,7 +364,6 @@ class TestTextLayerPath:
         from scitex_cv._document import read_document
 
         read_document(a_text_page, endpoint="http://127.0.0.1:1/none")
-        stamp = os.path.getmtime(sidecar_path_for(a_text_page))
         # Act
         again = read_document(a_text_page, endpoint="http://127.0.0.1:1/none")
         # Assert
